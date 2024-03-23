@@ -1,8 +1,15 @@
 import 'package:currency_converter/currency_converter_material_page.dart';
+import 'package:currency_converter/exchange_rate_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => ExchangeRateProvider(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

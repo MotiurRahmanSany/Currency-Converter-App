@@ -1,4 +1,6 @@
+import 'package:currency_converter/exchange_rate_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class CurrencyConverterMaterialPage extends StatefulWidget {
   const CurrencyConverterMaterialPage({super.key});
@@ -10,9 +12,19 @@ class CurrencyConverterMaterialPage extends StatefulWidget {
 
 class _CurrencyConverterMaterialPage
     extends State<CurrencyConverterMaterialPage> {
-  // variables
-  double result = 0;
-  final TextEditingController textEditingController = TextEditingController();
+  //! variables
+  final TextEditingController amountController = TextEditingController();
+  late double result;
+  //! functions
+  void getTotalAmount() {
+    double? isValidAmount = double.tryParse(amountController.text);
+    if (isValidAmount == null) {
+      context.read<ExchangeRateProvider>().value = '0';
+      amountController.clear();
+      return;
+    }
+    context.read<ExchangeRateProvider>().value = amountController.text;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +37,7 @@ class _CurrencyConverterMaterialPage
     );
 
     // returning Scaffold
+    result = context.watch<ExchangeRateProvider>().totalAmount();
 
     return Scaffold(
       backgroundColor: Colors.blueGrey,
@@ -48,7 +61,7 @@ class _CurrencyConverterMaterialPage
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'BDT: ${result != 0 ? result.toStringAsFixed(2) : result.toStringAsFixed(0)} Taka',
+                'BDT: $result  Taka',
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 30,
@@ -59,7 +72,8 @@ class _CurrencyConverterMaterialPage
               // padding
               // container
               TextField(
-                controller: textEditingController,
+                controller: amountController,
+                onSubmitted: (value) => getTotalAmount(),
                 style: const TextStyle(
                   color: Colors.black,
                 ),
@@ -82,10 +96,7 @@ class _CurrencyConverterMaterialPage
               // button
               const SizedBox(height: 10),
               TextButton(
-                onPressed: () {
-                  result = double.parse(textEditingController.text) * 112;
-                  setState(() {});
-                },
+                onPressed: getTotalAmount,
                 style: TextButton.styleFrom(
                   backgroundColor: Colors.black,
                   foregroundColor: Colors.white,
